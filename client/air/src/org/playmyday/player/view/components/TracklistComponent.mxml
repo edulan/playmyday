@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import org.playmyday.player.model.events.TracklistEvent;
+			import org.playmyday.player.model.vo.TrackVO;
+			
+			[Bindable]
+			public var tracks:ArrayCollection;
+		]]>
+	</fx:Script>
+
+	<mx:DataGrid width="100%" height="100%"
+				 doubleClickEnabled="true"
+				 dataProvider="{tracks}"
+				 dragEnabled="true"
+				 itemDoubleClick="dispatchEvent(new TracklistEvent(TracklistEvent.PLAY, event.itemRenderer.data as TrackVO))">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Title" dataField="title" itemRenderer="org.playmyday.player.view.renderers.TracklistItemRenderer"/>
+			<mx:DataGridColumn headerText="Artist" dataField="artist" itemRenderer="org.playmyday.player.view.renderers.TracklistItemRenderer"/>
+			<mx:DataGridColumn headerText="Album" dataField="album" itemRenderer="org.playmyday.player.view.renderers.TracklistItemRenderer"/>
+			<mx:DataGridColumn headerText="Time" dataField="time" itemRenderer="org.playmyday.player.view.renderers.TracklistItemRenderer"/>
+		</mx:columns>
+	</mx:DataGrid>
+</s:Group>

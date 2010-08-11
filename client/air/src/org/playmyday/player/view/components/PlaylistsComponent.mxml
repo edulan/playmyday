@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import org.playmyday.player.model.events.PlaylistEvent;
+			import org.playmyday.player.model.vo.PlaylistVO;
+			
+			[Bindable]
+			public var playlists:ArrayCollection;
+		]]>
+	</fx:Script>
+
+	<s:TextInput width="100%" height="30"
+				 text="New playlist"
+				 enter="dispatchEvent(new PlaylistEvent(PlaylistEvent.ADD, new PlaylistVO(event.target.text, [])))" />
+	<s:List width="100%" height="100%"
+			dataProvider="{playlists}"
+			change="dispatchEvent(new PlaylistEvent(PlaylistEvent.SELECT, event.target.selectedItem))"
+			itemRenderer="org.playmyday.player.view.renderers.PlaylistsItemRenderer" />
+
+</s:Group>
