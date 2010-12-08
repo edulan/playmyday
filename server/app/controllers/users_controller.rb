@@ -14,7 +14,7 @@ class UsersController < ApplicationController
       @user.update_attributes(params[:user])
       respond_with(@user)
     rescue ActiveRecord::RecordNotFound 
-      render :json => "Not Found", :status => :not_found
+      respond_with(@user, :status => :not_found)
     end
   end
 
