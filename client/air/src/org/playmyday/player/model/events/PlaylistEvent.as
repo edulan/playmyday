@@ -3,30 +3,23 @@ package org.playmyday.player.model.events
 	import flash.events.Event;
 	
 	import org.playmyday.player.model.vo.PlaylistVO;
-	import org.playmyday.player.model.vo.TrackVO;
 	
 	public class PlaylistEvent extends Event
 	{
-		public static const ADD:String 		= "add";
-		public static const SELECT:String 	= "select";
-		public static const REMOVE:String 	= "remove";
-		public static const DRAGDROP:String = "dragdrop"
+		public static const ADD:String 		= "addPlaylist";
+		public static const SELECT:String 	= "selectPlaylist";
+		public static const REMOVE:String 	= "removePlaylist";
+		public static const DROP:String 	= "dropTrack"
 		
-		private var playlistVO:PlaylistVO;
-		private var trackVO:TrackVO;
+		private var _playlist:PlaylistVO;
 		
-		public function PlaylistEvent(type:String, playlist:PlaylistVO, track:TrackVO=null, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super(type, bubbles, cancelable);
-			playlistVO = playlist;
-			trackVO = track;
+		public function PlaylistEvent(type:String, playlist:PlaylistVO) {
+			_playlist = playlist;
+			super(type, true, false);
 		}
 		
 		public function get playlist():PlaylistVO {
-			return playlistVO;
-		}
-		
-		public function get track():TrackVO {
-			return trackVO;
+			return _playlist;
 		}
 	}
 }

@@ -3,23 +3,25 @@
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:components="org.playmyday.player.view.components.*"
-					   creationComplete="appFacade.startup(this)"
+					   creationComplete="onCreationComplete(event)"
 					   width="780" height="600">
 
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
 			import org.playmyday.player.ApplicationFacade;
 			
-			private var appFacade:ApplicationFacade = ApplicationFacade.getInstance();
+			protected function onCreationComplete(evt:FlexEvent):void {
+				ApplicationFacade.getInstance().startup(this);
+			}
 		]]>
 	</fx:Script>
-	
-	
-	<s:VGroup width="100%" height="100%">		
+
+	<s:VGroup width="100%" height="100%">
 		<s:HGroup width="100%" gap="0" height="80">
 			<components:ControlsComponent id="controls" height="100%" width="100%" />
-			<components:SearchComponent height="100%" width="200" >
-			</components:SearchComponent>
+			<components:SearchComponent height="100%" width="200" />
 		</s:HGroup>
 		<s:HGroup width="100%" height="100%">
 			<s:VGroup width="200" height="100%">

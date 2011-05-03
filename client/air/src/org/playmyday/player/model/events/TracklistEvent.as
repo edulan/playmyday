@@ -6,13 +6,13 @@ package org.playmyday.player.model.events
 	
 	public class TracklistEvent extends Event
 	{
-		public static const PLAY:String = "play";
+		public static const SELECT:String = "selectTrack";
 		
 		private var _track:TrackVO;
 		
-		public function TracklistEvent(type:String, track:TrackVO, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super(type, bubbles, cancelable);
+		public function TracklistEvent(type:String, track:TrackVO) {
 			_track = track;
+			super(type, true, false);
 		}
 		
 		public function get track():TrackVO {

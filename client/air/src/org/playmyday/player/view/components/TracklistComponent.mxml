@@ -2,29 +2,46 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Declarations>
+		<s:ArrayCollection id="tracks" />
+	</fx:Declarations>
 
 	<fx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
 			
 			import org.playmyday.player.model.events.TracklistEvent;
 			import org.playmyday.player.model.vo.TrackVO;
-			
-			[Bindable]
-			public var tracks:ArrayCollection;
+
+			protected function onItemDoubleClick(event:ListEvent):void {
+				var track:TrackVO = event.itemRenderer.data as TrackVO;
+
+				dispatchEvent(new TracklistEvent(TracklistEvent.SELECT, track));
+			}
+
 		]]>
 	</fx:Script>
 
 	<mx:DataGrid width="100%" height="100%"
+				 dragEnabled="true"
 				 doubleClickEnabled="true"
 				 dataProvider="{tracks}"
-				 dragEnabled="true"
-				 itemDoubleClick="dispatchEvent(new TracklistEvent(TracklistEvent.PLAY, event.itemRenderer.data as TrackVO))">
+				 itemDoubleClick="onItemDoubleClick(event)">
 		<mx:columns>
-			<mx:DataGridColumn headerText="Title" dataField="title" itemRenderer="org.playmyday.player.view.renderers.TracklistItemRenderer"/>
-			<mx:DataGridColumn headerText="Artist" dataField="artist" itemRenderer="org.playmyday.player.view.renderers.TracklistItemRenderer"/>
-			<mx:DataGridColumn headerText="Album" dataField="album" itemRenderer="org.playmyday.player.view.renderers.TracklistItemRenderer"/>
-			<mx:DataGridColumn headerText="Time" dataField="time" itemRenderer="org.playmyday.player.view.renderers.TracklistItemRenderer"/>
+			<mx:DataGridColumn headerText="Title"
+							   dataField="title"
+							   itemRenderer="org.playmyday.player.view.renderers.TrackDataGridItemRenderer" />
+			<mx:DataGridColumn headerText="Artist"
+							   dataField="artist"
+							   itemRenderer="org.playmyday.player.view.renderers.TrackDataGridItemRenderer" />
+			<mx:DataGridColumn headerText="Album"
+							   dataField="album"
+							   itemRenderer="org.playmyday.player.view.renderers.TrackDataGridItemRenderer" />
+			<mx:DataGridColumn headerText="Time"
+							   dataField="time"
+							   itemRenderer="org.playmyday.player.view.renderers.TrackDataGridItemRenderer" />
 		</mx:columns>
 	</mx:DataGrid>
+
 </s:Group>

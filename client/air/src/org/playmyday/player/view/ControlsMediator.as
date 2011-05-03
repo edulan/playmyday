@@ -1,8 +1,8 @@
 package org.playmyday.player.view
 {
+	import flash.errors.IOError;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
-	import flash.events.MouseEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.TimerEvent;
 	import flash.media.Sound;
@@ -26,59 +26,152 @@ package org.playmyday.player.view
 		private static const INITIAL_VOLUME:Number = 0.30;
 		private static const UPDATE_INTERVAL:Number = 500;	// ms
 
-		private var sound:Sound;						// Mp3 File
-		private var soundChannel:SoundChannel;			// Reference to playing channel
-		private var soundTransform:SoundTransform;
-		private var currentPosition:Number;				// Current play position (time)
-		private var percent:Number;						// Current played percentage
-		private var isPlaying:Boolean;					// Is the mp3 playing?
-		private var isLoaded:Boolean;					// Is the mp3 loaded?
-		private var updateSeek:Timer;					// Timer for updating the seek bar
-		private var trackVO:TrackVO;
+		private var _sound:Sound;						// Mp3 File
+		private var _soundChannel:SoundChannel;			// Reference to playing channel
+		private var _soundTransform:SoundTransform;		// Sound transformation to manage volume
+		private var _currentPosition:Number;			// Current play position (time)
+		private var _percent:Number;					// Current played percentage
+		private var _isPlaying:Boolean;					// Is the mp3 playing?
+		private var _isLoaded:Boolean;					// Is the mp3 loaded?
+		private var _updateTimer:Timer;					// Timer for updating the seek bar
+		private var _currentTrack:TrackVO;				// Reference to the current track
 		
 		public function ControlsMediator(viewComponent:ControlsComponent) {
+			_isLoaded = false;
+			_isPlaying = false;
+			_currentPosition = 0;
+			_currentTrack = new TrackVO();
+			_updateTimer = new Timer(UPDATE_INTERVAL);
 			super(NAME, viewComponent);
-			isPlaying = false;
-			isLoaded = false;
-			updateSeek = new Timer(UPDATE_INTERVAL);
 		}
 		
 		override public function onRegister():void {
-			// listeners
+			// Setup listeners
 			controlsComponent.addEventListener(ControlEvent.PLAY, onPlay);
 			controlsComponent.addEventListener(ControlEvent.SEEK, onSeek);
 			controlsComponent.addEventListener(ControlEvent.CHANGE_VOLUME, onChangeVolume);
-			// view initialization
+			_updateTimer.addEventListener(TimerEvent.TIMER, onTimer);
+			// View initialization
 			controlsComponent.volume = INITIAL_VOLUME;
-			// Add event listener for seek bar updater & start timer							
-			//updateSeek.addEventListener(TimerEvent.TIMER, onUpdate);
-			//updateSeek.start();
+			controlsComponent.isSongLoaded = true;
 		}
 
 		override public function listNotificationInterests():Array {
-			return [ApplicationFacade.PLAY];
+			return [
+						ApplicationFacade.TRACK_SELECTED
+					];
 		}
 		
 		override public function handleNotification(note:INotification):void {
 			switch(note.getName()) {
-				case ApplicationFacade.PLAY:
-					var vo:TrackVO = note.getBody() as TrackVO;
-
-					if(isPlaying) {
-						soundChannel.stop();
-					}
-
-					// data initialization
-					trackVO = vo;
-					isPlaying = false;
-					currentPosition = 0;
-					// gui update
-					controlsComponent.isSongLoaded = true;
-					
-					playPause();
+				case ApplicationFacade.TRACK_SELECTED:
+					handleTrackSelected(note.getBody() as TrackVO);
 					break;
 			}
 		}
+		
+		/* Notification handlers */
+		
+		private function handleTrackSelected(track:TrackVO):void {
+			if(_isPlaying) {
+				_isPlaying = false;
+				_currentPosition = 0;
+				try {
+					_sound.removeEventListener(Event.OPEN, onOpen);
+					_sound.removeEventListener(Event.COMPLETE, onComplete);
+					_sound.removeEventListener(ProgressEvent.PROGRESS, onProgress);
+					_sound.removeEventListener(IOErrorEvent.IO_ERROR, onIOError);
+					_sound.close();
+				} catch (ioError:IOError) {
+					trace("isURLInaccessible="+String(_sound.isURLInaccessible));
+					trace("isBuffering="+String(_sound.isBuffering));
+					trace("length="+String(_sound.length));
+				}
+				_soundChannel.stop();
+				_updateTimer.stop();
+				_soundChannel.removeEventListener(Event.SOUND_COMPLETE, onSoundComplete);
+			}
+
+			// TODO: Refactor logic
+			if (!_isLoaded && _currentTrack.url != track.url) {
+				_currentTrack = track;
+
+				_sound = new Sound();
+				_sound.addEventListener(Event.OPEN, onOpen);
+				_sound.addEventListener(Event.COMPLETE, onComplete);
+				_sound.addEventListener(ProgressEvent.PROGRESS, onProgress);
+				_sound.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+				_sound.load(new URLRequest(_currentTrack.url));
+				_soundTransform = new SoundTransform(controlsComponent.volume, 0);
+			} else {
+				playPause();
+			}
+		}
+		
+		/* View listeners */
+		
+		private function onPlay(evt:ControlEvent):void {
+			playPause();
+		}
+		
+		private function onSeek(evt:ControlEvent):void {
+			_currentPosition = (controlsComponent.seekBar.contentMouseX/controlsComponent.seekBar.width)*_sound.length;
+			
+			if (_isPlaying) {
+				_soundChannel.stop();
+				_soundChannel.removeEventListener(Event.SOUND_COMPLETE, onSoundComplete);
+				_soundChannel = _sound.play(_currentPosition);
+				_soundChannel.soundTransform = _soundTransform;
+				_soundChannel.addEventListener(Event.SOUND_COMPLETE, onSoundComplete);
+			}
+		}
+		
+		private function onChangeVolume(evt:ControlEvent):void {
+			_soundTransform = new SoundTransform(controlsComponent.volume, 0);
+			if(_soundChannel)
+				_soundChannel.soundTransform = _soundTransform;
+		}
+		
+		private function onSoundComplete(evt:Event):void {
+			_updateTimer.stop();
+			sendNotification(ApplicationFacade.PLAYBACK_COMPLETED, _currentTrack);
+		}
+		
+		private function onOpen(evt:Event):void {
+			playPause();
+		}
+		
+		private function onComplete(evt:Event):void {
+			enableSeek();
+			_isLoaded = true;
+		}
+		
+		private function onProgress(evt:ProgressEvent):void {
+			// TODO: Implement
+			trace("PROGRESS: " + evt.bytesLoaded);
+		}
+		
+		private function onIOError(evt:IOErrorEvent):void {
+			var invalidSound:Sound = evt.currentTarget as Sound;
+			// Remove invalid sound object listeners
+			invalidSound.removeEventListener(Event.OPEN, onOpen);
+			invalidSound.removeEventListener(Event.COMPLETE, onComplete);
+			invalidSound.removeEventListener(ProgressEvent.PROGRESS, onProgress);
+			invalidSound.removeEventListener(IOErrorEvent.IO_ERROR, onIOError);
+		}
+
+		private function onTimer(e:Event):void {
+			if(_isPlaying) {
+				// If the position is beyond the song start, calculate & set the percentage
+				_percent = _soundChannel.position > 0 ? (_soundChannel.position/_sound.length)*100 : 0;
+				controlsComponent.seekBar.setProgress(_percent,100);
+				
+				// Tell the seekbar to redraw itself
+				controlsComponent.seekBar.validateNow();
+			}
+		}
+		
+		/* Helpers */
 
 		public function enableSeek():void {
 			controlsComponent.seekBar.enabled = true;
@@ -86,77 +179,18 @@ package org.playmyday.player.view
 		}
 
 		private function playPause():void  {
-			if(isPlaying) {
-				currentPosition = soundChannel.position;
-				soundChannel.stop();
+			if(_isPlaying) {
+				_currentPosition = _soundChannel.position;
+				_soundChannel.stop();
+				_updateTimer.stop();
+				_soundChannel.removeEventListener(Event.SOUND_COMPLETE, onSoundComplete);
 			} else {
-				sound = new Sound();
-				soundTransform = new SoundTransform(controlsComponent.volume, 0);
-
-				sound.addEventListener(ProgressEvent.PROGRESS, onSongProgress);
-				sound.addEventListener(Event.COMPLETE, onSongLoaded);
-				sound.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
-				sound.load(new URLRequest(trackVO.url));
-
-				soundChannel = sound.play(currentPosition);
-				soundChannel.soundTransform = soundTransform;
+				_soundChannel = _sound.play(_currentPosition);
+				_soundChannel.soundTransform = _soundTransform;
+				_soundChannel.addEventListener(Event.SOUND_COMPLETE, onSoundComplete);
+				_updateTimer.start();
 			}
-			isPlaying = !isPlaying;
-		}
-		
-		private function onPlay(evt:ControlEvent):void {
-			if(isPlaying) {
-				currentPosition = soundChannel.position;
-				soundChannel.stop();
-			} else {
-				soundChannel = sound.play(currentPosition);
-				soundChannel.soundTransform = soundTransform;
-			}
-			isPlaying = !isPlaying;
-		}
-
-		private function onSongLoaded(evt:Event):void {
-			sound.removeEventListener(Event.COMPLETE, onSongLoaded);
-
-			enableSeek();
-			isLoaded = true;
-		}
-		
-		private function onChangeVolume(evt:ControlEvent):void {
-			soundTransform = new SoundTransform(controlsComponent.volume, 0);
-			if(soundChannel)
-				soundChannel.soundTransform = soundTransform;
-		}
-		
-		private function onSongProgress(evt:ProgressEvent):void {
-
-		}
-		
-		private function onIOError(evt:IOErrorEvent):void {
-			
-		}
-
-		private function onUpdate(e:Event):void {
-			// Is a song playing?
-			//if(isPlaying && isLoaded) {
-			if(isPlaying) {
-				// If the position is beyond the song start, calculate & set the percentage
-				percent = soundChannel.position > 0 ? (soundChannel.position/sound.length)*100 : 0;
-				controlsComponent.seekBar.setProgress(percent,100);
-				
-				// Tell the seekbar to redraw itself
-				controlsComponent.seekBar.validateNow();
-			}
-		}
-
-		private function onSeek(evt:MouseEvent):void {
-			// Is the song playing AND is the seekbar enabled and visible?
-			if(isPlaying) { 
-				// Stop playing at current position, change to new location, continue playing
-				soundChannel.stop();
-				currentPosition = (controlsComponent.seekBar.contentMouseX/controlsComponent.seekBar.width)*sound.length;
-				soundChannel = sound.play(currentPosition);
-			}
+			_isPlaying = !_isPlaying;
 		}
 		
 		protected function get controlsComponent():ControlsComponent {

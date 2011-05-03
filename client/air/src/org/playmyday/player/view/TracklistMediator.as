@@ -20,25 +20,60 @@ package org.playmyday.player.view
 		}
 		
 		override public function onRegister():void {
-			tracklistComponent.addEventListener(TracklistEvent.PLAY, onPlay);
+			tracklistComponent.addEventListener(TracklistEvent.SELECT, onSelect);
 		}
 		
 		override public function listNotificationInterests():Array {
-			return [ApplicationFacade.PLAYLIST_SELECTED];
+			return [
+						ApplicationFacade.PLAYLIST_SELECTED,
+						ApplicationFacade.PLAYBACK_COMPLETED,
+						ApplicationFacade.GET_ALL_TRACKS_SUCCEED,
+						ApplicationFacade.GET_ALL_TRACKS_FAILED
+					];
 		}
 		
 		override public function handleNotification(note:INotification):void {
 			switch(note.getName()) {
 				case ApplicationFacade.PLAYLIST_SELECTED:
-					var playlistVO:PlaylistVO = note.getBody() as PlaylistVO;
-
-					tracklistComponent.tracks = new ArrayCollection(playlistVO.tracks); 
+					handlePlaylistSelected(note.getBody() as PlaylistVO);
+					break;
+				case ApplicationFacade.PLAYBACK_COMPLETED:
+					handlePlaybackCompleted(note.getBody() as TrackVO);
+					break;
+				case ApplicationFacade.GET_ALL_TRACKS_SUCCEED:
+					handleGetAllTracksSucceed(note.getBody() as ArrayCollection);
+					break;
+				case ApplicationFacade.GET_ALL_TRACKS_FAILED:
+					handleGetAllTracksFailed();
 					break;
 			}
 		}
 		
-		private function onPlay(evt:TracklistEvent):void {
-			sendNotification(ApplicationFacade.PLAY, evt.track);
+		/* Notification handlers */
+		
+		private function handlePlaylistSelected(playlist:PlaylistVO):void {
+			sendNotification(ApplicationFacade.COMMAND_GET_ALL_TRACKS, playlist.id);
+		}
+		
+		private function handlePlaybackCompleted(track:TrackVO):void {
+			var currentIndex:int = tracklistComponent.tracks.getItemIndex(track);
+			var nextTrack:TrackVO = tracklistComponent.tracks.getItemAt(currentIndex + 1) as TrackVO;
+			
+			sendNotification(ApplicationFacade.TRACK_SELECTED, nextTrack);
+		}
+		
+		private function handleGetAllTracksSucceed(tracks:ArrayCollection):void {
+			tracklistComponent.tracks = tracks;
+		}
+		
+		private function handleGetAllTracksFailed():void {
+			// TODO: Implement
+		}
+		
+		/* View listeners */
+		
+		private function onSelect(evt:TracklistEvent):void {
+			sendNotification(ApplicationFacade.TRACK_SELECTED, evt.track);
 		}
 		
 		protected function get tracklistComponent():TracklistComponent {

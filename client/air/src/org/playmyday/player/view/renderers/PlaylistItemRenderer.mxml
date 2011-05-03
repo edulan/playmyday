@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				autoDrawBackground="true">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.DataGrid;
+			import mx.core.IUIComponent;
+			import mx.events.DragEvent;
+			import mx.managers.DragManager;
+			
+			import org.playmyday.player.model.events.PlaylistEvent;
+			import org.playmyday.player.model.vo.PlaylistVO;
+			import org.playmyday.player.model.vo.TrackVO;
+
+			protected function onDragEnter(evt:DragEvent):void {
+				/*
+				DragManager.acceptDragDrop(evt.currentTarget as IUIComponent);
+				*/
+			}
+			
+			protected function onDragDrop(evt:DragEvent):void {
+				/*
+				var dataGrid:DataGrid = evt.dragInitiator as DataGrid;
+				var playlistVO:PlaylistVO = data as PlaylistVO;
+				var trackVO:TrackVO = dataGrid.selectedItem as TrackVO;
+
+				dispatchEvent(new PlaylistEvent(PlaylistEvent.DRAGDROP, playlistVO, trackVO, true));
+				*/
+			}
+			
+			private function get playlist():PlaylistVO {
+				return data as PlaylistVO;
+			}
+		]]>
+	</fx:Script>
+
+	<s:Label width="100%"
+			 text="{data.name}"
+			 dragEnter="onDragEnter(event)"
+			 dragDrop="onDragDrop(event)" />
+
+</s:ItemRenderer>

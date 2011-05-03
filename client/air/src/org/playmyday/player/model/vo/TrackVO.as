@@ -8,6 +8,6 @@ package org.playmyday.player.model.vo
 		public var album:String;
 		public var time:String;
 		public var url:String;
-		public var image:String;
+		public var thumbnail:String;
 	}
 }
