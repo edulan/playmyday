@@ -5,6 +5,7 @@ package org.playmyday.player
 	import org.playmyday.player.controller.ApplicationStartupCommand;
 	import org.playmyday.player.controller.GetAllPlaylistsCommand;
 	import org.playmyday.player.controller.GetAllTracksCommand;
+	import org.playmyday.player.controller.GetTrackUrlCommand;
 	import org.playmyday.player.controller.LoginCommand;
 	import org.playmyday.player.controller.LogoutCommand;
 	import org.playmyday.player.controller.RemovePlaylistCommand;
@@ -35,6 +36,8 @@ package org.playmyday.player
 		public static const GET_ALL_TRACKS_FAILED:String = "getAllTracksFailed";
 		public static const ADD_TRACK_SUCCEED:String = "addTrackSucceed";
 		public static const ADD_TRACK_FAILED:String = "addTrackFailed";
+		public static const GET_TRACK_URL_SUCCEED:String = "getTrackUrlSucceed";
+		public static const GET_TRACK_URL_FAILED:String = "getTrackUrlFailed";
 
 		/* Commands */
 		public static const COMMAND_LOGIN:String = "commandLogin";
@@ -44,6 +47,7 @@ package org.playmyday.player
 		public static const COMMAND_REMOVE_PLAYLIST:String = "commandRemovePlaylist";
 		public static const COMMAND_GET_ALL_TRACKS:String = "commandGetAllTracks";
 		public static const COMMAND_ADD_TRACK:String = "commandAddTrack";
+		public static const COMMAND_GET_TRACK_URL:String = "commandGetTrackUrl";
 
 		/* Views */
 		public static const VIEW_LOGIN_SCREEN:String = "viewLoginScreen";
@@ -72,6 +76,7 @@ package org.playmyday.player
 			registerCommand(COMMAND_REMOVE_PLAYLIST, RemovePlaylistCommand);
 			registerCommand(COMMAND_GET_ALL_TRACKS, GetAllTracksCommand);
 			registerCommand(COMMAND_ADD_TRACK, AddTrackCommand);
+			registerCommand(COMMAND_GET_TRACK_URL, GetTrackUrlCommand);
         }
 		
 		/**

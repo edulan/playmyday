@@ -1,6 +1,9 @@
 package org.playmyday.player.model
 {
 	import mx.collections.ArrayCollection;
+	import mx.rpc.events.FaultEvent;
+	import mx.rpc.events.ResultEvent;
+	import mx.rpc.http.HTTPService;
 	
 	import org.playmyday.player.ApplicationFacade;
 	import org.playmyday.player.model.utils.Storage;
@@ -11,6 +14,7 @@ package org.playmyday.player.model
 	public class TrackProxy extends Proxy
 	{
 		public static const NAME:String = "TrackProxy";
+		private static const TRACKER_URL:String = "http://www.goear.com/tracker758.php?f=";
 		
 		public function TrackProxy(data:Object=null) {
 			super(NAME, data);
@@ -19,6 +23,24 @@ package org.playmyday.player.model
 		public function getAllTracks(playlist:PlaylistVO):void {
 			data = new ArrayCollection(Storage.instance.getPlaylistTracks(playlist.name));
 			sendNotification(ApplicationFacade.GET_ALL_TRACKS_SUCCEED, tracks);
+		}
+		
+		public function getTrackUrl(track:TrackVO):void {
+			var service:HTTPService =  new HTTPService();
+			
+			service.url = TRACKER_URL + track.goearId;
+			service.requestTimeout = 10;
+			service.addEventListener(ResultEvent.RESULT,
+				function (evt:ResultEvent):void {
+					sendNotification(ApplicationFacade.GET_TRACK_URL_SUCCEED, evt.result);
+				}
+			);
+			service.addEventListener(FaultEvent.FAULT,
+				function (evt:FaultEvent):void {
+					sendNotification(ApplicationFacade.GET_TRACK_URL_FAILED);
+				}
+			);
+			service.send();
 		}
 		
 		public function addTrackToPlaylist(playlist:PlaylistVO, track:TrackVO):void {

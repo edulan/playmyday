@@ -78,8 +78,6 @@ package org.playmyday.player.model.utils
 			var t2:TrackVO = new TrackVO();
 			var t3:TrackVO = new TrackVO();
 			
-			// http://www.goear.com/tracker758.php?f=
-			
 			t1.id =			1;
 			t1.goearId =	"0578a68";
 			t1.title =  	"Pogo";

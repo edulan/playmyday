@@ -35,10 +35,12 @@ package org.playmyday.player.view
 		private var _isLoaded:Boolean;					// Is the mp3 loaded?
 		private var _updateTimer:Timer;					// Timer for updating the seek bar
 		private var _currentTrack:TrackVO;				// Reference to the current track
+		private var _isCurrentSelected:Boolean;
 		
 		public function ControlsMediator(viewComponent:ControlsComponent) {
 			_isLoaded = false;
 			_isPlaying = false;
+			_isCurrentSelected = false;
 			_currentPosition = 0;
 			_currentTrack = new TrackVO();
 			_updateTimer = new Timer(UPDATE_INTERVAL);
@@ -58,7 +60,9 @@ package org.playmyday.player.view
 
 		override public function listNotificationInterests():Array {
 			return [
-						ApplicationFacade.TRACK_SELECTED
+						ApplicationFacade.TRACK_SELECTED,
+						ApplicationFacade.GET_TRACK_URL_SUCCEED,
+						ApplicationFacade.GET_TRACK_URL_FAILED
 					];
 		}
 		
@@ -67,12 +71,24 @@ package org.playmyday.player.view
 				case ApplicationFacade.TRACK_SELECTED:
 					handleTrackSelected(note.getBody() as TrackVO);
 					break;
+				case ApplicationFacade.GET_TRACK_URL_SUCCEED:
+					handleGetTrackUrlSucceed(note.getBody() as Object);
+					break;
+				case ApplicationFacade.GET_TRACK_URL_FAILED:
+					handleGetTrackUrlFailed();
+					break;
 			}
 		}
 		
 		/* Notification handlers */
 		
 		private function handleTrackSelected(track:TrackVO):void {
+			_isCurrentSelected = (_currentTrack.id == track.id);
+			_currentTrack = track;
+			sendNotification(ApplicationFacade.COMMAND_GET_TRACK_URL, track);
+		}
+		
+		private function handleGetTrackUrlSucceed(data:Object):void {
 			if(_isPlaying) {
 				_isPlaying = false;
 				_currentPosition = 0;
@@ -80,11 +96,9 @@ package org.playmyday.player.view
 				_updateTimer.stop();
 				_soundChannel.removeEventListener(Event.SOUND_COMPLETE, onSoundComplete);
 			}
-
+			
 			// TODO: Revise
-			if (_currentTrack.id != track.id) {
-				_currentTrack = track;
-				
+			if (!_isCurrentSelected) {
 				if (_sound) {
 					try {
 						_sound.removeEventListener(Event.OPEN, onOpen);
@@ -96,17 +110,21 @@ package org.playmyday.player.view
 						trace("Exception");
 					}
 				}
-
+			
 				_sound = new Sound();
 				_sound.addEventListener(Event.OPEN, onOpen);
 				_sound.addEventListener(Event.COMPLETE, onComplete);
 				_sound.addEventListener(ProgressEvent.PROGRESS, onProgress);
 				_sound.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
-				_sound.load(new URLRequest(_currentTrack.url));
+				_sound.load(new URLRequest(data.songs.song.path));
 				_soundTransform = new SoundTransform(controlsComponent.volume, 0);
 			} else {
 				playPause();
 			}
+		}
+		
+		private function handleGetTrackUrlFailed():void {
+			// TODO: Implement
 		}
 		
 		/* View listeners */
