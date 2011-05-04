@@ -19,7 +19,6 @@
 
 				dispatchEvent(new TracklistEvent(TracklistEvent.SELECT, track));
 			}
-
 		]]>
 	</fx:Script>
 

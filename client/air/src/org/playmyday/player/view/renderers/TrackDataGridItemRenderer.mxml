@@ -3,6 +3,28 @@
 						  xmlns:s="library://ns.adobe.com/flex/spark" 
 						  xmlns:mx="library://ns.adobe.com/flex/mx"
 						  focusEnabled="true">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.core.DragSource;
+			import mx.managers.DragManager;
+			
+			import org.playmyday.player.model.vo.TrackVO;
+
+			protected function onMouseDown(evt:MouseEvent):void {
+				var dragInitiator:Label = evt.currentTarget as Label;
+				var dragSource:DragSource = new DragSource();
+
+				dragSource.addData(track, "track");               				
+				DragManager.doDrag(dragInitiator, dragSource, evt);
+			}
+			
+			private function get track():TrackVO {
+				return data as TrackVO;
+			}
+		]]>
+	</fx:Script>
+
 	
 	<s:Label width="100%"
 			 height="22"
@@ -10,6 +32,7 @@
 			 maxDisplayedLines="1"
 			 lineBreak="toFit"
 			 paddingLeft="4"
-			 text="{dataGridListData.label}" />
+			 text="{dataGridListData.label}"
+			 mouseDown="onMouseDown(event)" />
 
 </s:MXDataGridItemRenderer>

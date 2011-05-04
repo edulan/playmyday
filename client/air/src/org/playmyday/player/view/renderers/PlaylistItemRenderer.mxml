@@ -20,9 +20,7 @@
 			}
 			
 			protected function onDragDrop(evt:DragEvent):void {
-				// TODO: Revise, it should not access to other view
-				var dataGrid:DataGrid = evt.dragInitiator as DataGrid;
-				var track:TrackVO = dataGrid.selectedItem as TrackVO;
+				var track:TrackVO = evt.dragSource.dataForFormat("track") as TrackVO;
 
 				dispatchEvent(new PlaylistEvent(PlaylistEvent.ADD_TRACK, playlist, track));
 			}
