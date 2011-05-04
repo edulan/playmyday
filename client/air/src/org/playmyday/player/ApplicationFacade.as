@@ -1,6 +1,7 @@
 package org.playmyday.player
 {
 	import org.playmyday.player.controller.AddNewPlaylistCommand;
+	import org.playmyday.player.controller.AddTrackCommand;
 	import org.playmyday.player.controller.ApplicationStartupCommand;
 	import org.playmyday.player.controller.GetAllPlaylistsCommand;
 	import org.playmyday.player.controller.GetAllTracksCommand;
@@ -25,11 +26,14 @@ package org.playmyday.player
 		// tracks
 		public static const GET_ALL_TRACKS_SUCCEED:String = "getAllTracksSucceed";
 		public static const GET_ALL_TRACKS_FAILED:String = "getAllTracksFailed";
+		public static const ADD_TRACK_SUCCEED:String = "addTrackSucceed";
+		public static const ADD_TRACK_FAILED:String = "addTrackFailed";
 		/* Commands */
 		public static const COMMAND_GET_ALL_PLAYLISTS:String = "commandGetAllPlaylists";
 		public static const COMMAND_ADD_NEW_PLAYLIST:String = "commandAddNewPlaylist";
 		public static const COMMAND_REMOVE_PLAYLIST:String = "commandRemovePlaylist";
 		public static const COMMAND_GET_ALL_TRACKS:String = "commandGetAllTracks";
+		public static const COMMAND_ADD_TRACK:String = "commandAddTrack";
 
         /**
          * Singleton ApplicationFacade Factory Method
@@ -51,6 +55,7 @@ package org.playmyday.player
 			registerCommand(COMMAND_ADD_NEW_PLAYLIST, AddNewPlaylistCommand);
 			registerCommand(COMMAND_REMOVE_PLAYLIST, RemovePlaylistCommand);
 			registerCommand(COMMAND_GET_ALL_TRACKS, GetAllTracksCommand);
+			registerCommand(COMMAND_ADD_TRACK, AddTrackCommand);
         }
 		
 		/**

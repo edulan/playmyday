@@ -15,6 +15,8 @@ package org.playmyday.player.view
 	{
 		public static const NAME:String = "TracklistMediator";
 		
+		private var _currentPlaylist:PlaylistVO;
+		
 		public function TracklistMediator(viewComponent:TracklistComponent) {
 			super(NAME, viewComponent);
 		}
@@ -28,7 +30,8 @@ package org.playmyday.player.view
 						ApplicationFacade.PLAYLIST_SELECTED,
 						ApplicationFacade.PLAYBACK_COMPLETED,
 						ApplicationFacade.GET_ALL_TRACKS_SUCCEED,
-						ApplicationFacade.GET_ALL_TRACKS_FAILED
+						ApplicationFacade.GET_ALL_TRACKS_FAILED,
+						ApplicationFacade.REMOVE_PLAYLIST_SUCCEED
 					];
 		}
 		
@@ -46,13 +49,18 @@ package org.playmyday.player.view
 				case ApplicationFacade.GET_ALL_TRACKS_FAILED:
 					handleGetAllTracksFailed();
 					break;
+				case ApplicationFacade.REMOVE_PLAYLIST_SUCCEED:
+					handleRemovePlaylistSucceed();
+					break;
 			}
 		}
 		
 		/* Notification handlers */
 		
 		private function handlePlaylistSelected(playlist:PlaylistVO):void {
-			sendNotification(ApplicationFacade.COMMAND_GET_ALL_TRACKS, playlist.id);
+			_currentPlaylist = playlist;
+
+			sendNotification(ApplicationFacade.COMMAND_GET_ALL_TRACKS, _currentPlaylist);
 		}
 		
 		private function handlePlaybackCompleted(track:TrackVO):void {
@@ -68,6 +76,10 @@ package org.playmyday.player.view
 		
 		private function handleGetAllTracksFailed():void {
 			// TODO: Implement
+		}
+		
+		private function handleRemovePlaylistSucceed():void {
+			tracklistComponent.tracks = null;
 		}
 		
 		/* View listeners */

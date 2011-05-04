@@ -3,8 +3,8 @@ package org.playmyday.player.view
 	import mx.collections.ArrayCollection;
 	
 	import org.playmyday.player.ApplicationFacade;
-	import org.playmyday.player.model.PlaylistProxy;
 	import org.playmyday.player.model.events.PlaylistEvent;
+	import org.playmyday.player.model.vo.PlaylistVO;
 	import org.playmyday.player.view.components.PlaylistsComponent;
 	import org.puremvc.as3.interfaces.IMediator;
 	import org.puremvc.as3.interfaces.INotification;
@@ -19,10 +19,10 @@ package org.playmyday.player.view
 		}
 		
 		override public function onRegister():void {
-			playlistsComponent.addEventListener(PlaylistEvent.ADD, onAddPlaylist);
-			playlistsComponent.addEventListener(PlaylistEvent.SELECT, onSelectPlaylist);
-			playlistsComponent.addEventListener(PlaylistEvent.REMOVE, onRemovePlaylist);
-			playlistsComponent.addEventListener(PlaylistEvent.DROP, onDragDrop);
+			playlistsComponent.addEventListener(PlaylistEvent.ADD_PLAYLIST, onAddPlaylist);
+			playlistsComponent.addEventListener(PlaylistEvent.SELECT_PLAYLIST, onSelectPlaylist);
+			playlistsComponent.addEventListener(PlaylistEvent.REMOVE_PLAYLIST, onRemovePlaylist);
+			playlistsComponent.addEventListener(PlaylistEvent.ADD_TRACK, onAddTrack);
 			// Retrieve playlists
 			sendNotification(ApplicationFacade.COMMAND_GET_ALL_PLAYLISTS);
 		}
@@ -80,7 +80,7 @@ package org.playmyday.player.view
 		}
 		
 		private function handleRemovePlaylistSucceed():void {
-			// TODO: Implement
+			playlistsComponent.playlistList.selectedIndex = 0;
 		}
 		
 		private function handleRemovePlaylistFailed():void {
@@ -94,15 +94,24 @@ package org.playmyday.player.view
 		}
 
 		private function onSelectPlaylist(evt:PlaylistEvent):void {
-			sendNotification(ApplicationFacade.PLAYLIST_SELECTED, evt.playlist);
+			if (evt.playlist) {
+				sendNotification(ApplicationFacade.PLAYLIST_SELECTED, evt.playlist);
+			}
 		}
 
 		private function onRemovePlaylist(evt:PlaylistEvent):void {
-			sendNotification(ApplicationFacade.COMMAND_REMOVE_PLAYLIST, evt.playlist);
+			if (evt.playlist) {
+				sendNotification(ApplicationFacade.COMMAND_REMOVE_PLAYLIST, evt.playlist);
+			}
 		}
 		
-		private function onDragDrop(evt:PlaylistEvent):void {
-			//evt.playlist.tracks.push(evt.track);
+		private function onAddTrack(evt:PlaylistEvent):void {
+			var body:Object = {
+				playlist:evt.playlist,
+				track:evt.track
+			};
+
+			sendNotification(ApplicationFacade.COMMAND_ADD_TRACK, body);
 		}
 
 		protected function get playlistsComponent():PlaylistsComponent {

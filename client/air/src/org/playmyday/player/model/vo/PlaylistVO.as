@@ -5,6 +5,5 @@ package org.playmyday.player.model.vo
 	{
 		public var id:uint;
 		public var name:String;
-		public var tracks:Array;
 	}
 }

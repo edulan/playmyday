@@ -16,19 +16,15 @@
 			import org.playmyday.player.model.vo.TrackVO;
 
 			protected function onDragEnter(evt:DragEvent):void {
-				/*
 				DragManager.acceptDragDrop(evt.currentTarget as IUIComponent);
-				*/
 			}
 			
 			protected function onDragDrop(evt:DragEvent):void {
-				/*
+				// TODO: Revise, it should not access to other view
 				var dataGrid:DataGrid = evt.dragInitiator as DataGrid;
-				var playlistVO:PlaylistVO = data as PlaylistVO;
-				var trackVO:TrackVO = dataGrid.selectedItem as TrackVO;
+				var track:TrackVO = dataGrid.selectedItem as TrackVO;
 
-				dispatchEvent(new PlaylistEvent(PlaylistEvent.DRAGDROP, playlistVO, trackVO, true));
-				*/
+				dispatchEvent(new PlaylistEvent(PlaylistEvent.ADD_TRACK, playlist, track));
 			}
 			
 			private function get playlist():PlaylistVO {
@@ -38,6 +34,9 @@
 	</fx:Script>
 
 	<s:Label width="100%"
+			 height="22"
+			 paddingLeft="4"
+			 verticalAlign="middle"
 			 text="{data.name}"
 			 dragEnter="onDragEnter(event)"
 			 dragDrop="onDragDrop(event)" />

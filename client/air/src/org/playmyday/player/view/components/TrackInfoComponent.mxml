@@ -8,12 +8,21 @@
 		<vo:TrackVO id="track" />
 	</fx:Declarations>
 
-	<s:VGroup width="100%" height="100%" gap="0">
-		<s:VGroup height="40" horizontalAlign="center">
-			<s:Label text="{track.title}" />
-			<s:Label text="{track.artist} ({track.album})" />
+	<s:VGroup width="100%"
+			  height="100%"
+			  gap="0">
+		<s:VGroup width="100%"
+				  height="60"
+				  horizontalAlign="center">
+			<s:Label text="{track.title}"
+					 fontWeight="bold" />
+			<s:Label text="{track.artist} ({track.album})"
+					 maxDisplayedLines="1"
+					 lineBreak="toFit"
+					 fontSize="10" />
 		</s:VGroup>
-		<s:VGroup horizontalAlign="center" verticalAlign="middle">
+		<s:VGroup horizontalAlign="center"
+				  verticalAlign="middle">
 			<mx:Image source="{track.thumbnail}"
 					  scaleContent="false" />
 		</s:VGroup>

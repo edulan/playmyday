@@ -76,25 +76,26 @@ package org.playmyday.player.view
 			if(_isPlaying) {
 				_isPlaying = false;
 				_currentPosition = 0;
-				try {
-					_sound.removeEventListener(Event.OPEN, onOpen);
-					_sound.removeEventListener(Event.COMPLETE, onComplete);
-					_sound.removeEventListener(ProgressEvent.PROGRESS, onProgress);
-					_sound.removeEventListener(IOErrorEvent.IO_ERROR, onIOError);
-					_sound.close();
-				} catch (ioError:IOError) {
-					trace("isURLInaccessible="+String(_sound.isURLInaccessible));
-					trace("isBuffering="+String(_sound.isBuffering));
-					trace("length="+String(_sound.length));
-				}
 				_soundChannel.stop();
 				_updateTimer.stop();
 				_soundChannel.removeEventListener(Event.SOUND_COMPLETE, onSoundComplete);
 			}
 
-			// TODO: Refactor logic
-			if (!_isLoaded && _currentTrack.url != track.url) {
+			// TODO: Revise
+			if (_currentTrack.id != track.id) {
 				_currentTrack = track;
+				
+				if (_sound) {
+					try {
+						_sound.removeEventListener(Event.OPEN, onOpen);
+						_sound.removeEventListener(Event.COMPLETE, onComplete);
+						_sound.removeEventListener(ProgressEvent.PROGRESS, onProgress);
+						_sound.removeEventListener(IOErrorEvent.IO_ERROR, onIOError);
+						_sound.close();
+					} catch (ioError:IOError) {
+						trace("Exception");
+					}
+				}
 
 				_sound = new Sound();
 				_sound.addEventListener(Event.OPEN, onOpen);
