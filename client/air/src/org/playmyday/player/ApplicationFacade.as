@@ -5,6 +5,8 @@ package org.playmyday.player
 	import org.playmyday.player.controller.ApplicationStartupCommand;
 	import org.playmyday.player.controller.GetAllPlaylistsCommand;
 	import org.playmyday.player.controller.GetAllTracksCommand;
+	import org.playmyday.player.controller.LoginCommand;
+	import org.playmyday.player.controller.LogoutCommand;
 	import org.playmyday.player.controller.RemovePlaylistCommand;
 	import org.puremvc.as3.patterns.facade.Facade;
 
@@ -12,10 +14,15 @@ package org.playmyday.player
     {
 		/* Application */
         public static const STARTUP:String = "startup";
+
 		/* Notifications */
 		public static const TRACK_SELECTED:String = "trackSelected";
 		public static const PLAYLIST_SELECTED:String = "playlistSelected";
 		public static const PLAYBACK_COMPLETED:String = "playbackCompleted";
+		// login
+		public static const LOGIN_SUCCEED:String = "loginSucceed";
+		public static const LOGIN_FAILED:String = "loginFailed";
+		public static const LOGOUT_SUCCEED:String = "logoutSucceed";
 		// playlists
 		public static const GET_ALL_PLAYLISTS_SUCCEED:String = "getAllPlaylistsSucceed";
 		public static const GET_ALL_PLAYLISTS_FAILED:String = "getAllPlaylistsFailed";
@@ -28,12 +35,19 @@ package org.playmyday.player
 		public static const GET_ALL_TRACKS_FAILED:String = "getAllTracksFailed";
 		public static const ADD_TRACK_SUCCEED:String = "addTrackSucceed";
 		public static const ADD_TRACK_FAILED:String = "addTrackFailed";
+
 		/* Commands */
+		public static const COMMAND_LOGIN:String = "commandLogin";
+		public static const COMMAND_LOGOUT:String = "commandLogout";
 		public static const COMMAND_GET_ALL_PLAYLISTS:String = "commandGetAllPlaylists";
 		public static const COMMAND_ADD_NEW_PLAYLIST:String = "commandAddNewPlaylist";
 		public static const COMMAND_REMOVE_PLAYLIST:String = "commandRemovePlaylist";
 		public static const COMMAND_GET_ALL_TRACKS:String = "commandGetAllTracks";
 		public static const COMMAND_ADD_TRACK:String = "commandAddTrack";
+
+		/* Views */
+		public static const VIEW_LOGIN_SCREEN:String = "viewLoginScreen";
+		public static const VIEW_HOME_SCREEN:String = "viewHomeScreen";
 
         /**
          * Singleton ApplicationFacade Factory Method
@@ -51,6 +65,8 @@ package org.playmyday.player
         override protected function initializeController():void {
             super.initializeController();
             registerCommand(STARTUP, ApplicationStartupCommand);
+			registerCommand(COMMAND_LOGIN, LoginCommand);
+			registerCommand(COMMAND_LOGOUT, LogoutCommand);
 			registerCommand(COMMAND_GET_ALL_PLAYLISTS, GetAllPlaylistsCommand);
 			registerCommand(COMMAND_ADD_NEW_PLAYLIST, AddNewPlaylistCommand);
 			registerCommand(COMMAND_REMOVE_PLAYLIST, RemovePlaylistCommand);

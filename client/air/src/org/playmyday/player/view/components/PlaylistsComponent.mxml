@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx">
+		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:vo="org.playmyday.player.model.vo.*">
 	
 	<fx:Declarations>
 		<s:ArrayCollection id="playlists" />
+		<vo:PlaylistVO id="currentPlaylist" />
 	</fx:Declarations>
 
 	<fx:Script>
@@ -36,12 +37,6 @@
 					dispatchEvent(new PlaylistEvent(PlaylistEvent.REMOVE_PLAYLIST, playlist));
 				}
 			}
-
-			protected function onValueCommit(evt:FlexEvent):void {
-				var playlist:PlaylistVO = evt.currentTarget.selectedItem as PlaylistVO;
-
-				dispatchEvent(new PlaylistEvent(PlaylistEvent.SELECT_PLAYLIST, playlist));
-			}
 		]]>
 	</fx:Script>
 	
@@ -53,12 +48,12 @@
 				 height="26"
 				 text="New playlist"
 				 enter="onEnter(event)" />
-	<s:List id="playlistList"
-			width="100%" height="100%"
+	<s:List width="100%"
+			height="100%"
 			change="onChange(event)"
-			valueCommit="onValueCommit(event)"
 			keyDown="onKeyDown(event)"
 			dataProvider="{playlists}"
+			selectedItem="{currentPlaylist}"
 			itemRenderer="org.playmyday.player.view.renderers.PlaylistItemRenderer" />
 
 </s:Group>

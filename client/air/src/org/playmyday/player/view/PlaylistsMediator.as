@@ -80,7 +80,15 @@ package org.playmyday.player.view
 		}
 		
 		private function handleRemovePlaylistSucceed():void {
-			playlistsComponent.playlistList.selectedIndex = 0;
+			var playlists:ArrayCollection = playlistsComponent.playlists;
+			
+			if (playlists.length > 0) {
+				// TODO: Improve with playlist history selection algorithm
+				var currentPlaylist:PlaylistVO = playlists.getItemAt(0) as PlaylistVO;
+				
+				playlistsComponent.currentPlaylist = currentPlaylist;
+				sendNotification(ApplicationFacade.PLAYLIST_SELECTED, currentPlaylist);
+			}
 		}
 		
 		private function handleRemovePlaylistFailed():void {

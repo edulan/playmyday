@@ -2,9 +2,10 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   xmlns:components="org.playmyday.player.view.components.*"
+					   xmlns:screens="org.playmyday.player.view.screens.*"
+					   currentState=""
 					   creationComplete="onCreationComplete(event)"
-					   width="780" height="600">
+					   width="780" height="600" >
 
 	<fx:Script>
 		<![CDATA[
@@ -17,19 +18,22 @@
 			}
 		]]>
 	</fx:Script>
+	
+	<s:layout>
+		<s:BasicLayout />
+	</s:layout>
+	
+	<s:states>
+		<s:State id="loginState" name="login" />
+		<s:State id="homeState" name="home" />
+	</s:states>
 
-	<s:VGroup width="100%" height="100%">
-		<s:HGroup width="100%" gap="0" height="80">
-			<components:ControlsComponent id="controls" height="100%" width="100%" />
-			<components:SearchComponent height="100%" width="200" />
-		</s:HGroup>
-		<s:HGroup width="100%" height="100%">
-			<s:VGroup width="200" height="100%">
-				<components:PlaylistsComponent id="playlists" width="100%" height="100%" />
-				<components:TrackInfoComponent id="info" width="200" height="240" />
-			</s:VGroup>
-			<components:TracklistComponent id="tracklist" width="100%" height="100%" />
-		</s:HGroup>
-	</s:VGroup>
+	<s:Group width="100%"
+			 height="100%">
+		<screens:LoginScreen id="loginScreen"
+							 includeIn="login" />
+		<screens:HomeScreen id="homeScreen"
+							includeIn="home" />
+	</s:Group>
 
 </s:WindowedApplication>

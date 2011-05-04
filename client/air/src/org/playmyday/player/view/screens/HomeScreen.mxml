@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:components="org.playmyday.player.view.components.*"
+		 width="100%" height="100%">
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:HGroup width="100%" gap="0" height="80">
+		<components:ControlsComponent id="controls" height="100%" width="100%" />
+		<components:SearchComponent height="100%" width="200" />
+	</s:HGroup>
+	<s:HGroup width="100%" height="100%">
+		<s:VGroup width="200" height="100%">
+			<components:PlaylistsComponent id="playlists" width="100%" height="100%" />
+			<components:TrackInfoComponent id="info" width="200" height="240" />
+		</s:VGroup>
+		<components:TracklistComponent id="tracklist" width="100%" height="100%" />
+	</s:HGroup>
+	
+</s:Group>

@@ -8,8 +8,8 @@ package org.playmyday.player.model.events
 		public static const SEEK:String = "seek";
 		public static const CHANGE_VOLUME:String = "changeVolume";
 		
-		public function ControlEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
-			super(type, bubbles, cancelable);
+		public function ControlEvent(type:String) {
+			super(type, true, false);
 		}
 	}
 }

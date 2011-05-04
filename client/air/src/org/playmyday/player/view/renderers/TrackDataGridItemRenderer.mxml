@@ -15,7 +15,7 @@
 				var dragInitiator:Label = evt.currentTarget as Label;
 				var dragSource:DragSource = new DragSource();
 
-				dragSource.addData(track, "track");               				
+				dragSource.addData(track, "vo");               				
 				DragManager.doDrag(dragInitiator, dragSource, evt);
 			}
 			

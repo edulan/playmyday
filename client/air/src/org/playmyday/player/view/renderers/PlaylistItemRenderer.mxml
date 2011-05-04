@@ -6,7 +6,6 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import mx.controls.DataGrid;
 			import mx.core.IUIComponent;
 			import mx.events.DragEvent;
 			import mx.managers.DragManager;
@@ -20,7 +19,7 @@
 			}
 			
 			protected function onDragDrop(evt:DragEvent):void {
-				var track:TrackVO = evt.dragSource.dataForFormat("track") as TrackVO;
+				var track:TrackVO = evt.dragSource.dataForFormat("vo") as TrackVO;
 
 				dispatchEvent(new PlaylistEvent(PlaylistEvent.ADD_TRACK, playlist, track));
 			}
