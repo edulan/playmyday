@@ -11,6 +11,8 @@ package org.playmyday.player.view
 	import flash.net.URLRequest;
 	import flash.utils.Timer;
 	
+	import mx.formatters.DateFormatter;
+	
 	import org.playmyday.player.ApplicationFacade;
 	import org.playmyday.player.model.events.ControlEvent;
 	import org.playmyday.player.model.vo.TrackVO;
@@ -54,7 +56,7 @@ package org.playmyday.player.view
 			controlsComponent.addEventListener(ControlEvent.CHANGE_VOLUME, onChangeVolume);
 			_updateTimer.addEventListener(TimerEvent.TIMER, onTimer);
 			// View initialization
-			controlsComponent.volume = INITIAL_VOLUME;
+			controlsComponent.volumeLevel = INITIAL_VOLUME;
 			controlsComponent.isSongLoaded = true;
 		}
 
@@ -117,7 +119,7 @@ package org.playmyday.player.view
 				_sound.addEventListener(ProgressEvent.PROGRESS, onProgress);
 				_sound.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
 				_sound.load(new URLRequest(data.songs.song.path));
-				_soundTransform = new SoundTransform(controlsComponent.volume, 0);
+				_soundTransform = new SoundTransform(controlsComponent.volumeLevel);
 			} else {
 				playPause();
 			}
@@ -134,7 +136,7 @@ package org.playmyday.player.view
 		}
 		
 		private function onSeek(evt:ControlEvent):void {
-			_currentPosition = (controlsComponent.seekBar.contentMouseX/controlsComponent.seekBar.width)*_sound.length;
+			//_currentPosition = (controlsComponent.seekBar.contentMouseX/controlsComponent.seekBar.width)*_sound.length;
 			
 			if (_isPlaying) {
 				_soundChannel.stop();
@@ -146,7 +148,7 @@ package org.playmyday.player.view
 		}
 		
 		private function onChangeVolume(evt:ControlEvent):void {
-			_soundTransform = new SoundTransform(controlsComponent.volume, 0);
+			_soundTransform = new SoundTransform(controlsComponent.volumeLevel);
 			if(_soundChannel)
 				_soundChannel.soundTransform = _soundTransform;
 		}
@@ -161,13 +163,15 @@ package org.playmyday.player.view
 		}
 		
 		private function onComplete(evt:Event):void {
-			enableSeek();
 			_isLoaded = true;
+			trace(getFormattedTime(_sound.length));
 		}
 		
 		private function onProgress(evt:ProgressEvent):void {
-			// TODO: Implement
-			trace("PROGRESS: " + evt.bytesLoaded);
+			var length:Number = (_sound.bytesTotal * 8) / calculateKbps(_sound.length, _sound.bytesLoaded);
+
+			trace(getFormattedTime(length));
+			//trace("PROGRESS: " + evt.bytesLoaded);
 		}
 		
 		private function onIOError(evt:IOErrorEvent):void {
@@ -183,19 +187,14 @@ package org.playmyday.player.view
 			if(_isPlaying) {
 				// If the position is beyond the song start, calculate & set the percentage
 				_percent = _soundChannel.position > 0 ? (_soundChannel.position/_sound.length)*100 : 0;
-				controlsComponent.seekBar.setProgress(_percent,100);
+				//controlsComponent.seekBar.setProgress(_percent,100);
 				
 				// Tell the seekbar to redraw itself
-				controlsComponent.seekBar.validateNow();
+				//controlsComponent.seekBar.validateNow();
 			}
 		}
 		
 		/* Helpers */
-
-		public function enableSeek():void {
-			controlsComponent.seekBar.enabled = true;
-			controlsComponent.seekBar.visible = true;
-		}
 
 		private function playPause():void  {
 			if(_isPlaying) {
@@ -210,6 +209,21 @@ package org.playmyday.player.view
 				_updateTimer.start();
 			}
 			_isPlaying = !_isPlaying;
+		}
+		
+		private function getFormattedTime(milliseconds:Number):String {
+			var time:Date = new Date();
+			var timeFormatter:DateFormatter = new DateFormatter();
+			
+			time.setTime(milliseconds);			
+			timeFormatter.formatString = "NN:SS";
+			return timeFormatter.format(time) + " min";
+		}
+		
+		private function calculateKbps(length:Number, bytesLoaded:Number):Number {
+			var kbps:Number = (bytesLoaded * 8) / length;
+			
+			return Math.floor(kbps);
 		}
 		
 		protected function get controlsComponent():ControlsComponent {

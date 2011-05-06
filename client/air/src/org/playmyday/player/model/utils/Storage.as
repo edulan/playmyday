@@ -84,7 +84,6 @@ package org.playmyday.player.model.utils
 			t1.artist = 	"Digitalism";
 			t1.album =  	"Idealism";
 			t1.time =   	"3:46";
-			t1.url =    	"http://live3.goear.com/listen/7313da4b4faeab4aaf0f568846e385e0/4dc013e1/sst3/mp3files/11052007/9f810e1b8374bb8757d29df4fc7f8d84.mp3";
 			t1.thumbnail =	"http://ec1.images-amazon.com/images/P/B0002Z61B0.01.MZZZZZZZ.jpg";
 			t2.id =			2;
 			t2.goearId =	"9ffd548";
@@ -92,7 +91,6 @@ package org.playmyday.player.model.utils
 			t2.artist = 	"Two Door Cinema Club";
 			t2.album =  	"Tourist History";
 			t2.time =   	"2:47";
-			t2.url =    	"http://live3.goear.com/listen/97c434f071c220fe3bf6ec5c1d5a5ff0/4dc0144d/sst5/mp3files/15032010/848c3928146b803974c366ee8fa2f70f.mp3";
 			t2.thumbnail =	"http://ec1.images-amazon.com/images/P/B0030W1LDA.09.MZZZZZZZ.jpg";
 			t3.id =			3;
 			t3.goearId =	"d809f75";
@@ -100,7 +98,6 @@ package org.playmyday.player.model.utils
 			t3.artist = 	"Los Planetas";
 			t3.album =  	"Unidad de desplazamiento";
 			t3.time =   	"3:50";
-			t3.url =    	"http://live3.goear.com/listen/5084c89614e29e80106cfb06695bf2f1/4dbfef3f/sst/mp3files/15092006/ed038ead918917c469d03ede0d95e947.mp3";
 			t3.thumbnail =	null;
 			
 			createPlaylistTrack(p1.name, t1);
